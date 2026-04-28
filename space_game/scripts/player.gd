@@ -3,7 +3,7 @@ class_name Player extends CharacterBody2D
 signal laser_shot(laser)
 signal died
 
-@export var acceleration := 10.0
+@export var acceleration := 11.0
 @export var max_speed := 350.0
 @export var rotation_speed := 250.0
 
@@ -42,7 +42,7 @@ func _physics_process(delta):
 		rotate(deg_to_rad(-rotation_speed*delta))
 	
 	if input_vector.y == 0:
-		velocity = velocity.move_toward(Vector2.ZERO, 3)
+		velocity = velocity.move_toward(Vector2.ZERO, 4)
 	
 	move_and_slide()
 	
@@ -63,17 +63,19 @@ func shoot_laser():
 	emit_signal("laser_shot", l)
 
 func die():
-	if alive==true:
+	if alive == true:
 		alive = false
 		sprite.visible = false
 		cshape.set_deferred("disabled", true)
 		emit_signal("died")
-		
 
 func respawn(pos):
-	if alive==false:
+	if alive == false:
 		alive = true
 		global_position = pos
 		velocity = Vector2.ZERO
 		sprite.visible = true
+		cshape.set_deferred("disabled", true)
+
+		await get_tree().create_timer(1.0).timeout
 		cshape.set_deferred("disabled", false)
